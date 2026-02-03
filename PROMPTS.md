@@ -2,7 +2,10 @@
 
 VS Code Copilot prompts for migrating **Browser JavaScript** to **Playwright BDD**.
 
-**Important**: Uses `playwright-bdd` package, NOT `@cucumber/cucumber`.
+**Important**: 
+- Uses `playwright-bdd` package, NOT `@cucumber/cucumber`
+- Generates **JavaScript** by default (TypeScript is optional)
+- **Improves variable names** to be descriptive and contextual
 
 ---
 
@@ -10,104 +13,160 @@ VS Code Copilot prompts for migrating **Browser JavaScript** to **Playwright BDD
 
 ### Analyze Browser JS Tests
 ```
-@workspace Analyze all test files and identify Browser JS patterns:
-- document.getElementById, querySelector, querySelectorAll
-- jQuery $() selectors  
-- DOM property access (.value, .innerText, .innerHTML)
-- DOM actions (.click(), .focus(), .submit())
-- setTimeout, setInterval usage
-- window.location navigation
-- localStorage/sessionStorage usage
+@workspace Analyze all test files and identify:
+1. Browser JS patterns (document.getElementById, querySelector, $() jQuery)
+2. DOM property access (.value, .innerText, .innerHTML)
+3. DOM actions (.click(), .focus(), .submit())
+4. setTimeout/setInterval usage
+5. Poorly named variables (single letters, abbreviations, non-descriptive names)
 
-Create a migration report with file list and complexity assessment.
+Create a migration report with file list, complexity assessment, and variables that need renaming.
 ```
 
-### Initialize Playwright BDD Project
+### Initialize Playwright BDD Project (JavaScript)
 ```
-@workspace Set up Playwright BDD project for Browser JS migration:
-1. Create playwright.config.ts with defineBddConfig from playwright-bdd
-2. Update package.json with @playwright/test and playwright-bdd (NOT @cucumber/cucumber)
-3. Create tsconfig.json
-4. Create tests/steps/common.steps.ts using createBdd() from playwright-bdd
-5. Create a sample .feature file with @Regression tag on all scenarios
+@workspace Set up Playwright BDD project using JavaScript:
+1. Create playwright.config.js with defineBddConfig from playwright-bdd
+2. Update package.json with @playwright/test and playwright-bdd
+3. Create tests/steps/common.steps.js using createBdd() from playwright-bdd
+4. Create a sample .feature file with @Regression tag on all scenarios
+5. Use require() syntax, NOT import statements
+6. Use descriptive variable names throughout (no single-letter names)
 ```
 
 ---
 
-## 📁 Migration Prompts
+## 📁 Migration Prompts (JavaScript)
 
 ### Migrate Single Browser JS File
 ```
 @workspace /file:[path-to-file]
 
-Migrate this Browser JS test to Playwright BDD:
+Migrate this Browser JS test to Playwright BDD using JavaScript:
 1. Convert document.getElementById/querySelector to page.locator()
 2. Convert jQuery $() to page.locator()
 3. Convert .value assignments to .fill()
 4. Convert .click() calls with proper await
 5. Replace setTimeout/setInterval with Playwright waiting
 6. Create .feature file with @Regression tag on ALL scenarios
-7. Create step definitions using createBdd() from playwright-bdd (NOT @cucumber/cucumber)
+7. Create .js step definitions using createBdd() from playwright-bdd
+8. Use require() syntax, NOT import/export
+9. RENAME all poorly named variables:
+   - e, el, elem → descriptive element name (loginButton, emailInput)
+   - x, y, z, a, b, c → meaningful names based on context
+   - btn → submitButton, cancelButton, etc.
+   - val, v → inputValue, selectedValue, etc.
+   - arr, list → itemList, userArray, etc.
+   - str, s → errorMessage, userName, etc.
 ```
 
-### Convert DOM Selectors
+### Convert and Rename Variables
 ```
-Convert all Browser JS DOM selectors in this file to Playwright:
-- document.getElementById('x') → page.locator('#x')
-- document.querySelector('.x') → page.locator('.x')  
-- document.querySelectorAll('.x') → page.locator('.x')
-- document.getElementsByClassName('x') → page.locator('.x')
-- document.getElementsByName('x') → page.locator('[name="x"]')
-- $('.selector') → page.locator('.selector')
-- jQuery('.selector') → page.locator('.selector')
+@workspace /file:[path-to-file]
 
-Ensure all locators use await where needed.
+Analyze this file and improve ALL variable names:
+
+1. Find poorly named variables:
+   - Single letters (e, x, i, n, s, v, etc.)
+   - Abbreviations (btn, val, elem, arr, obj, etc.)
+   - Generic names (data, temp, result, item, etc.)
+
+2. Rename based on context:
+   - Form elements: emailInput, passwordField, submitButton
+   - User data: userName, userEmail, userProfile
+   - Lists: menuItems, searchResults, userList
+   - Booleans: isLoggedIn, hasError, isVisible
+   - Counts: itemCount, retryAttempts, pageNumber
+
+3. Apply naming conventions:
+   - camelCase for variables
+   - Prefix booleans with is/has/can/should
+   - Pluralize arrays
+   - Be specific, not generic
+
+Show before/after for each renamed variable.
 ```
 
-### Convert jQuery to Playwright
+### Fix Variable Names Only
 ```
-Convert all jQuery code in this file to Playwright:
-- $('.sel').val() → await page.locator('.sel').inputValue()
-- $('.sel').val('x') → await page.locator('.sel').fill('x')
-- $('.sel').text() → await page.locator('.sel').textContent()
-- $('.sel').html() → await page.locator('.sel').innerHTML()
-- $('.sel').click() → await page.locator('.sel').click()
-- $('.sel').show() → await page.locator('.sel').evaluate(el => el.style.display = 'block')
-- $('.sel').hide() → await page.locator('.sel').evaluate(el => el.style.display = 'none')
-- $('.sel').attr('x') → await page.locator('.sel').getAttribute('x')
+@workspace /file:[path-to-file]
+
+Review this file and rename ALL poorly named variables without changing functionality:
+
+BAD → GOOD examples:
+- e → targetElement, clickedButton, inputField
+- el → loginForm, navigationMenu, modalDialog
+- btn → submitButton, closeButton, nextPageButton
+- val → currentValue, selectedOption, inputText
+- arr → userList, menuItems, searchResults
+- str → errorMessage, welcomeText, pageTitle
+- obj → userData, formData, configOptions
+- data → apiResponse, userProfile, searchResults
+- temp → previousValue, cachedResult
+- flag → isValid, hasLoaded, canSubmit
+- res → serverResponse, validationResult
+- i, j → rowIndex, columnIndex, itemIndex
+
+Provide the complete refactored code with all variables renamed.
+```
+
+### Convert DOM Selectors with Good Names
+```
+Convert all Browser JS DOM selectors in this file to Playwright.
+Use descriptive variable names based on what the element represents:
+
+BEFORE:
+const e = document.getElementById('email');
+const p = document.getElementById('pass');
+const b = document.querySelector('.btn');
+
+AFTER:
+const emailInput = page.locator('#email');
+const passwordInput = page.locator('#pass');
+const submitButton = page.locator('.btn');
+
+Apply this pattern to ALL selectors in the file.
+Generate JavaScript code using require() syntax.
+```
+
+### Convert jQuery to Playwright with Good Names
+```
+Convert all jQuery code in this file to Playwright using JavaScript.
+Rename all variables to be descriptive:
+
+BEFORE:
+const v = $('.input').val();
+const t = $('.title').text();
+$('.btn').click();
+
+AFTER:
+const inputValue = await page.locator('.input').inputValue();
+const titleText = await page.locator('.title').textContent();
+const submitButton = page.locator('.btn');
+await submitButton.click();
+
+Use require() syntax for imports.
 ```
 
 ### Convert Waits to Playwright
 ```
 Find all setTimeout, setInterval, sleep, and polling loops in this file.
-Replace them with proper Playwright waiting:
+Replace them with proper Playwright waiting and use good variable names:
 
-- setTimeout(() => check(), 1000) → await expect(locator).toBeVisible()
-- setInterval with condition → await expect(locator).toPass()
-- sleep(2000) → await expect(locator).toHaveText('expected')
+BEFORE:
+setTimeout(() => {
+  const e = document.querySelector('.result');
+  if (e) console.log(e.innerText);
+}, 1000);
+
+AFTER:
+const resultElement = page.locator('.result');
+await expect(resultElement).toBeVisible();
+const resultText = await resultElement.textContent();
+console.log(resultText);
 
 Never use waitForTimeout() unless absolutely necessary.
-```
-
-### Convert Navigation
-```
-Convert all Browser JS navigation to Playwright:
-- window.location = 'url' → await page.goto('url')
-- window.location.href = 'url' → await page.goto('url')
-- window.location.reload() → await page.reload()
-- history.back() → await page.goBack()
-
-For reading URL:
-- window.location.href → page.url()
-```
-
-### Convert Storage Operations
-```
-Convert all localStorage/sessionStorage operations to Playwright:
-
-- localStorage.setItem('k', 'v') → await page.evaluate(() => localStorage.setItem('k', 'v'))
-- localStorage.getItem('k') → await page.evaluate(() => localStorage.getItem('k'))
-- sessionStorage.setItem('k', 'v') → await page.evaluate(() => sessionStorage.setItem('k', 'v'))
+Generate JavaScript code with descriptive names.
 ```
 
 ---
@@ -124,6 +183,7 @@ Analyze this Browser JS test and generate a Gherkin feature file:
 5. Add @Regression tag to ALL scenarios (this is mandatory)
 6. Use Scenario Outline for data-driven tests
 7. Write steps from user perspective
+8. Use descriptive step text (not generic)
 ```
 
 ### Add Missing @Regression Tags
@@ -146,80 +206,81 @@ Feature: Login
     ...
 ```
 
-### Create Feature from Browser JS Function
-```
-Convert this Browser JS function to a Gherkin feature:
-
-Function: [paste function]
-
-Generate:
-1. Feature with As a/I want/So that
-2. Scenario with Given/When/Then
-3. @Regression tag (MANDATORY)
-4. Parameterize hardcoded values
-```
-
 ---
 
-## 🔧 Step Definition Prompts
+## 🔧 Step Definition Prompts (JavaScript)
 
-### Generate Step Definitions (playwright-bdd)
+### Generate Step Definitions with Good Variable Names
 ```
-Generate step definitions for this feature file using playwright-bdd.
+Generate JavaScript step definitions for this feature file using playwright-bdd.
 
-IMPORTANT: Use this exact pattern (NOT @cucumber/cucumber):
+Use descriptive variable names:
 
-import { createBdd } from 'playwright-bdd';
-import { expect } from '@playwright/test';
+const { createBdd } = require('playwright-bdd');
+const { expect } = require('@playwright/test');
 
 const { Given, When, Then } = createBdd();
 
-Given('step text', async ({ page }) => {
-  // implementation
+// GOOD - descriptive parameter and variable names
+When('I enter {string} in the email field', async ({ page }, emailAddress) => {
+  const emailInput = page.locator('#email');
+  await emailInput.fill(emailAddress);
 });
 
-- Use page.locator() for all element access
-- Use web-first assertions (expect(locator).toBeVisible())
-- Add proper TypeScript types
+// BAD - avoid this
+When('I enter {string} in the email field', async ({ page }, s) => {
+  const e = page.locator('#email');
+  await e.fill(s);
+});
+
+Use require() syntax, NOT import.
+Generate .js files, NOT .ts.
 ```
 
-### Create Common Steps Library
+### Create Common Steps Library (JavaScript)
 ```
-Create a comprehensive common steps file using playwright-bdd createBdd():
+Create a comprehensive common steps file using JavaScript and playwright-bdd createBdd().
 
-Include steps for:
-- Navigation (goto, reload, back, forward)
-- Clicking elements
-- Filling inputs
-- Clearing inputs
-- Selecting dropdowns
-- Checking/unchecking checkboxes
-- Visibility assertions
-- Text assertions
-- Value assertions
-- URL assertions
+Requirements:
+1. Use descriptive variable names throughout:
+   - targetElement, inputField, submitButton (not e, el, btn)
+   - expectedText, inputValue, optionValue (not s, v, val)
+   - targetUrl, pageTitle, errorMessage (not url, t, msg)
 
-Use: import { createBdd } from 'playwright-bdd';
+2. Include steps for:
+   - Navigation (goto, reload, back, forward)
+   - Clicking elements
+   - Filling inputs
+   - Clearing inputs
+   - Selecting dropdowns
+   - Checking/unchecking checkboxes
+   - Visibility assertions
+   - Text assertions
+   - Value assertions
+   - URL assertions
+
+Use: const { createBdd } = require('playwright-bdd');
 NOT: import { Given, When, Then } from '@cucumber/cucumber';
+Generate .js file with require() syntax.
 ```
 
 ---
 
 ## 🐛 Error Fixing Prompts
 
-### Fix Runtime Errors in Headless Mode
+### Fix Runtime Errors with Good Variable Names
 ```
 This test is failing in headless mode with error: [paste error]
 
-Analyze and fix:
+Analyze and fix using JavaScript:
 1. Identify the root cause
-2. Apply the appropriate fix from these common solutions:
-   - strict mode violation → use .first() or more specific selector
-   - element not visible → add scrollIntoViewIfNeeded() and visibility wait
-   - element intercepted → close overlay or use force: true
-   - timeout → increase timeout or add explicit wait
-   - element detached → re-query element after DOM change
-3. Ensure fix works in both headless and headed mode
+2. Apply the appropriate fix
+3. ALSO rename any poorly named variables found in the code:
+   - el, e, elem → descriptive name based on element type
+   - btn → submitButton, closeButton, etc.
+   - val, v → inputValue, currentValue, etc.
+4. Ensure fix works in both headless and headed mode
+5. Generate JavaScript code with good variable names
 ```
 
 ### Fix Element Not Found Error
@@ -228,12 +289,13 @@ Fix this "element not found" or "strict mode violation" error:
 
 Error: [paste error]
 
-Apply these fixes:
+Apply these fixes (generate JavaScript with good variable names):
 1. Make selector more specific
 2. Add .first() or .nth(n) for multiple matches
 3. Wait for element: await expect(locator).toBeVisible()
-4. Check if element is in iframe: page.frameLocator('#frame')
-5. Verify selector syntax is correct
+4. Use descriptive variable names:
+   - const submitButton = page.locator('.btn').first();
+   - NOT: const b = page.locator('.btn').first();
 ```
 
 ### Fix Timeout Error
@@ -242,66 +304,47 @@ Fix this timeout error:
 
 Error: [paste error]
 
-Apply these fixes:
+Apply these fixes (generate JavaScript with good variable names):
 1. Increase specific timeout: { timeout: 60000 }
 2. Add explicit wait: await expect(locator).toBeVisible()
-3. Wait for page load: await page.waitForLoadState('networkidle')
-4. Check if element actually exists
-```
-
-### Fix Element Intercepted Error
-```
-Fix this "element intercepted" error:
-
-Error: [paste error]
-
-Apply these fixes:
-1. Close any overlays/modals first
-2. Scroll element into view: await locator.scrollIntoViewIfNeeded()
-3. Wait for animations: add animation disable CSS
-4. Use force: true as last resort: await locator.click({ force: true })
+3. Use descriptive names:
+   - const slowLoadingElement = page.locator('#slow');
+   - await expect(slowLoadingElement).toBeVisible({ timeout: 60000 });
 ```
 
 ### Fix Flaky Test
 ```
 This test is flaky (sometimes passes, sometimes fails):
 
-Analyze and stabilize:
+Analyze and stabilize using JavaScript:
 1. Replace hardcoded waits with assertions
 2. Add proper element visibility waits
 3. Handle race conditions with expect().toBeVisible()
 4. Ensure test isolation
-5. Disable animations if needed
-```
-
-### Fix Headless-Specific Issues
-```
-This test passes in headed mode but fails in headless:
-
-Debug and fix by:
-1. Set viewport: viewport: { width: 1920, height: 1080 }
-2. Add explicit waits for dynamic content
-3. Disable animations with CSS injection
-4. Check for hover-dependent elements
-5. Add userAgent if site detects headless
+5. Rename any poorly named variables to be descriptive
+6. Disable animations if needed
 ```
 
 ---
 
 ## 📦 Configuration Prompts
 
-### Setup Playwright Config for BDD
+### Setup Playwright Config (JavaScript)
 ```
-Create playwright.config.ts for Playwright BDD:
+Create playwright.config.js for Playwright BDD.
+Use descriptive variable names:
 
-Use defineBddConfig from playwright-bdd (NOT cucumberReporter):
+const { defineConfig, devices } = require('@playwright/test');
+const { defineBddConfig } = require('playwright-bdd');
 
-import { defineConfig, devices } from '@playwright/test';
-import { defineBddConfig } from 'playwright-bdd';
-
-const testDir = defineBddConfig({
+const testDirectory = defineBddConfig({
   features: 'tests/features/**/*.feature',
-  steps: 'tests/steps/**/*.ts',
+  steps: 'tests/steps/**/*.js',
+});
+
+module.exports = defineConfig({
+  testDir: testDirectory,
+  // ... rest of config with descriptive names
 });
 
 Include:
@@ -311,15 +354,17 @@ Include:
 - Reasonable timeouts
 ```
 
-### Update Package.json
+### Update Package.json (JavaScript)
 ```
-Update package.json for Playwright BDD:
+Update package.json for Playwright BDD with JavaScript:
 
 Add dependencies:
 - @playwright/test
 - playwright-bdd
 
-DO NOT add @cucumber/cucumber
+DO NOT add:
+- @cucumber/cucumber
+- typescript (unless specifically requested)
 
 Add scripts:
 - "test": "npx bddgen && playwright test"
@@ -332,49 +377,110 @@ Add scripts:
 
 ## 🔄 Batch Operations
 
-### Migrate All Browser JS Files
+### Migrate All Files and Fix Variable Names
 ```
-@workspace Migrate all Browser JS test files:
+@workspace Migrate all Browser JS test files using JavaScript:
 
 1. Find all files with document.*, $(), jQuery patterns
 2. For each file:
    - Create .feature file with @Regression tag on ALL scenarios
-   - Create step definitions using createBdd() from playwright-bdd
+   - Create .js step definitions using createBdd() from playwright-bdd
    - Convert all Browser JS patterns to Playwright
-3. Generate common.steps.ts with shared steps
-4. Ensure NO @cucumber/cucumber imports exist
+   - RENAME ALL poorly named variables to be descriptive
+3. Generate common.steps.js with shared steps (good variable names)
+4. Use require() syntax throughout
+5. Ensure NO @cucumber/cucumber imports exist
+
+Variable naming rules:
+- e, el, elem → elementName based on context
+- btn → buttonName (submitButton, closeButton)
+- val, v → valueName (inputValue, selectedValue)
+- arr → arrayName (itemList, userArray)
+- str, s → stringName (errorMessage, userName)
 ```
 
-### Fix All Failing Tests
+### Fix All Variable Names in Project
 ```
-@workspace Run all tests in headless mode and fix failures:
+@workspace Scan all .js files in tests/ and rename poorly named variables:
 
-1. Run: npx bddgen && playwright test
-2. For each failure:
-   - Identify error type (timeout, not visible, intercepted, etc.)
-   - Apply appropriate fix
-   - Re-run to verify
-3. Ensure all tests pass in headless mode
-```
+Find and rename:
+- Single letter variables (e, x, i, n, s, v, a, b, c)
+- Abbreviations (btn, val, elem, arr, obj, str, num)
+- Generic names (data, temp, result, item, thing)
 
-### Verify No Cucumber References
-```
-@workspace Scan entire project and remove any @cucumber/cucumber references:
+Apply context-aware naming:
+- Form elements: emailInput, passwordField, submitButton
+- API responses: userData, apiResponse, serverResult
+- DOM elements: menuContainer, headerSection, footerLinks
+- State: isLoggedIn, hasError, isLoading
+- Lists: userList, menuItems, searchResults
 
-1. Search for: import { Given, When, Then } from '@cucumber/cucumber'
-2. Replace with: import { createBdd } from 'playwright-bdd'
-3. Update step definitions to use: const { Given, When, Then } = createBdd();
-4. Remove @cucumber/cucumber from package.json if present
+Generate a report of all changes made.
 ```
 
-### Add @Regression Tags to All Features
+### Verify Code Quality
 ```
-@workspace Scan all .feature files and ensure @Regression tag:
+@workspace Verify all migrated code:
 
-1. If Feature has no tag, add @Regression
-2. If Scenario has no tag, add @Regression
-3. Keep existing tags, just ensure @Regression is present
-4. Report which files were modified
+1. Check all features have @Regression tag
+2. Check no @cucumber/cucumber imports
+3. Check all steps use createBdd()
+4. Check variable naming:
+   - No single-letter names (except standard loop counters)
+   - No abbreviations (btn, val, elem)
+   - All booleans prefixed with is/has/can/should
+   - All arrays use plural names
+   - All names are descriptive and contextual
+
+Report any violations found.
+```
+
+---
+
+## Variable Naming Quick Reference
+
+### Bad → Good Examples
+
+| Bad | Good (based on context) |
+|-----|------------------------|
+| `e` | `loginButton`, `emailInput`, `modalDialog` |
+| `el` | `navigationMenu`, `formContainer`, `headerSection` |
+| `btn` | `submitButton`, `cancelButton`, `nextButton` |
+| `val` | `inputValue`, `selectedOption`, `currentPrice` |
+| `str` | `errorMessage`, `userName`, `pageTitle` |
+| `arr` | `userList`, `menuItems`, `searchResults` |
+| `obj` | `userData`, `formData`, `configOptions` |
+| `data` | `apiResponse`, `userProfile`, `searchResults` |
+| `temp` | `previousValue`, `cachedResult`, `backupData` |
+| `flag` | `isValid`, `hasLoaded`, `canSubmit` |
+| `res` | `serverResponse`, `validationResult`, `queryResult` |
+| `i` | `rowIndex`, `itemIndex`, `pageNumber` |
+| `n` | `itemCount`, `retryAttempts`, `maxPages` |
+| `x`, `y` | `horizontalPosition`, `verticalOffset` |
+
+### Naming Patterns
+
+```javascript
+// Elements - name by purpose
+const emailInput = page.locator('#email');
+const submitButton = page.locator('.submit-btn');
+const errorMessage = page.locator('.error');
+
+// Values - name by content
+const currentUsername = await usernameInput.inputValue();
+const selectedCountry = await countryDropdown.inputValue();
+
+// Booleans - prefix with is/has/can/should
+const isUserLoggedIn = await loginStatus.isVisible();
+const hasValidationError = await errorMessage.isVisible();
+
+// Lists - use plurals
+const menuItems = page.locator('.menu-item');
+const allUsers = await userList.all();
+
+// Responses - name by source
+const loginResponse = await page.waitForResponse('/api/login');
+const userData = await loginResponse.json();
 ```
 
 ---
@@ -383,9 +489,12 @@ Add scripts:
 
 1. **Always @Regression**: Every feature and scenario needs `@Regression` tag
 2. **Use playwright-bdd**: Use `createBdd()`, never `@cucumber/cucumber`
-3. **Test headless**: Always verify tests pass in headless mode
-4. **No setTimeout**: Replace all waits with Playwright assertions
-5. **Fix errors**: Apply specific fixes for each error type
+3. **JavaScript by default**: Use `.js` files unless TypeScript specifically requested
+4. **require() syntax**: Use `require()` not `import` for JavaScript
+5. **Test headless**: Always verify tests pass in headless mode
+6. **No setTimeout**: Replace all waits with Playwright assertions
+7. **Descriptive names**: Every variable should describe its purpose
+8. **No abbreviations**: Write out full words (button not btn, element not el)
 
 ## VS Code Keyboard Shortcuts
 
